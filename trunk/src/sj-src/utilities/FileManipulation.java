@@ -327,7 +327,6 @@ public class FileManipulation {
 			BufferedReader input =  new BufferedReader(new FileReader(aFile));
 			try {
 				String line = null; //not declared within while loop
-
 				while (( line = input.readLine()) != null){
 					con.add(line);
 				}

@@ -22,11 +22,15 @@
 
 package sj.opencv;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.ochafik.lang.jnaerator.runtime.This;
@@ -45,6 +49,7 @@ public class OpenCVLibLoader {
 	private static String native_lib_folder_name = "opencv.2.4.0";
 	private static String relative_lib_path = "";
 	private static String platform_specific_library_version = "";
+	private static String platform_specific_library_beginning = "";
 	private static String platform_specific_library_ending = "";
 
 	static{
@@ -52,16 +57,19 @@ public class OpenCVLibLoader {
 			relative_lib_path += "osx" + SEP;
 			platform_specific_library_version = ".2.4.0";
 			platform_specific_library_ending = ".dylib";
+			platform_specific_library_beginning = "lib";
 		}
 		else if( Platform.isLinux() ){
 			relative_lib_path += "linux" + SEP;
 			platform_specific_library_version = "";
 			platform_specific_library_ending = ".so";
+			platform_specific_library_beginning = "lib";
 		}
 		else if( Platform.isWindows() ){
 			relative_lib_path += "windows" + SEP;
 			platform_specific_library_version = "240";
 			platform_specific_library_ending = ".dll";
+			platform_specific_library_beginning = "";
 		}
 		else{
 			throw new RuntimeException("Don't have a native library for your platform: "+System.getProperty("os.name"));
@@ -113,8 +121,8 @@ public class OpenCVLibLoader {
 			if( native_lib_path == null ){
 				throw new RuntimeException("Can't guess absolute location of opencv native libraries");
 			}
-			if( !new File(native_lib_path +SEP+ "libopencv_core"+getPlatformLibraryVersion()+getPlatformLibraryEnding()).exists() ){
-				throw new RuntimeException("Can't load native opencv library from guessed location: "+native_lib_path +SEP+ "libopencv_core"+getPlatformLibraryVersion()+getPlatformLibraryEnding());
+			if( !new File(native_lib_path +SEP+ platform_specific_library_beginning+"opencv_core"+platform_specific_library_version+platform_specific_library_ending).exists() ){
+				throw new RuntimeException("Can't load native opencv library from guessed location: "+native_lib_path +SEP+ platform_specific_library_beginning+"opencv_core"+platform_specific_library_version+platform_specific_library_ending);
 			}
 		}
 
@@ -160,17 +168,14 @@ public class OpenCVLibLoader {
 		if( are_in_processing ){
 			String prefspath = null;
 			if( Platform.isMac() ) prefspath = System.getProperty("user.home") + SEP + "Library" +SEP+ "Processing" +SEP+ "preferences.txt";
+			else if( Platform.isWindows() ) prefspath = System.getProperty("user.home") + SEP + "Application Data" +SEP+ "Processing" +SEP+ "preferences.txt";
 			else if( Platform.isLinux() ){
 				throw new RuntimeException("Can't yet load the Processing preference file for Linux");
-			}
-			else if( Platform.isWindows() ){
-				throw new RuntimeException("Can't yet load the Processing preference file for Windows");
 			}
 			if( !new File(prefspath).exists() ) throw new RuntimeException("Can't find Processing preference file");
 			Properties prop = new Properties();
 			try {
-				FileInputStream fi = new FileInputStream(new File(prefspath));
-				prop.load(fi);
+				prop.load( new StringReader(getContents(new File(prefspath)).replace("\\", "\\\\")) );
 			} catch (Exception e1) {
 				throw new RuntimeException("Can't process Processing preference file");
 			}
@@ -231,6 +236,29 @@ public class OpenCVLibLoader {
 //			e.printStackTrace();
 //		}
 //	}
+
+	private static String getContents(File aFile) {
+		StringBuilder str = new StringBuilder();
+		try {
+			BufferedReader input =  new BufferedReader(new FileReader(aFile));
+			try {
+				String line = null; //not declared within while loop
+				while (( line = input.readLine()) != null){
+					str.append(line);
+					str.append(System.getProperty("line.separator"));
+				}
+			}
+			finally {
+				input.close();
+			}
+		}
+		catch (IOException ex){
+			ex.printStackTrace();
+		}
+
+		return str.toString();
+	}
+
 
 	private static class DummyClass{}
 
