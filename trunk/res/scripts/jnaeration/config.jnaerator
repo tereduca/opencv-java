@@ -1,0 +1,51 @@
+//-v
+
+-I "/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1/x86_64-apple-darwin10/"
+-I	"$(DIR)/modules/core/include/opencv2/core"
+-I	"$(DIR)/modules/imgproc/include/opencv2/imgproc"
+-I	"$(DIR)/modules/highgui/include/opencv2/highgui"
+-I	"$(DIR)/modules/objdetect/include/opencv2/objdetect"
+-I	"$(DIR)/modules/calib3d/include/opencv2/calib3d"
+-I	"$(DIR)/modules/features2d/include/opencv2/features2d"
+-I	"$(DIR)/modules/flann/include/opencv2/flann"
+
+-library cxcore 
+	"$(DIR)/modules/core/include/opencv2/core/*.h*"
+
+-library imgproc 
+	"$(DIR)/modules/imgproc/include/opencv2/imgproc/*.h*"
+
+-library highgui 
+	"$(DIR)/modules/highgui/include/opencv2/highgui/*.h*"
+
+-library objdetect 
+	"$(DIR)/modules/objdetect/include/opencv2/objdetect/*.hpp"
+
+-library flann 
+	"$(DIR)/modules/flann/include/opencv2/flann/flann.hpp"
+
+-library features2d 
+	"$(DIR)/modules/features2d/include/opencv2/features2d/features2d.hpp"
+
+-library calib3d 
+	"$(DIR)/modules/calib3d/include/opencv2/calib3d/calib3d.hpp"
+
+
+
+-arch darwin_universal 
+	"$(DIR)/../build/lib/lib*.dylib?"
+
+-root sj.opencv.jna
+
+-skipLibraryInstance
+
+-o jna-src
+
+-v // verbose
+
+-f // force overwrite
+
+-noComp // no compilation
+-runtime JNA
+-mode Directory
+-nocpp
