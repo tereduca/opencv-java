@@ -39,9 +39,9 @@ import sj.opencv.jna.objdetect.ObjdetectLibrary;
  */
 public class JNAOpenCV {
 
-	public static CxcoreLibrary CXCORE = (CxcoreLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_core"+OpenCVLibLoader.getPlatformSpecificLibraryEnding(), CxcoreLibrary.class) );
-	public static HighguiLibrary HIGHGUI = (HighguiLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_highgui"+OpenCVLibLoader.getPlatformSpecificLibraryEnding(), HighguiLibrary.class) );
-	public static ImgprocLibrary IMGPROC = (ImgprocLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_imgproc"+OpenCVLibLoader.getPlatformSpecificLibraryEnding(), ImgprocLibrary.class) );
-	public static ObjdetectLibrary OBJDETECT = (ObjdetectLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_objdetect"+OpenCVLibLoader.getPlatformSpecificLibraryEnding(), ObjdetectLibrary.class) );
-	public static Calib3dLibrary CALIB3D = (Calib3dLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_calib3d"+OpenCVLibLoader.getPlatformSpecificLibraryEnding(), Calib3dLibrary.class) );
+	public static CxcoreLibrary CXCORE = (CxcoreLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_core"+OpenCVLibLoader.getPlatformLibraryVersion(), CxcoreLibrary.class) );
+	public static HighguiLibrary HIGHGUI = (HighguiLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_highgui"+OpenCVLibLoader.getPlatformLibraryVersion(), HighguiLibrary.class) );
+	public static ImgprocLibrary IMGPROC = (ImgprocLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_imgproc"+OpenCVLibLoader.getPlatformLibraryVersion(), ImgprocLibrary.class) );
+	public static ObjdetectLibrary OBJDETECT = (ObjdetectLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_objdetect"+OpenCVLibLoader.getPlatformLibraryVersion(), ObjdetectLibrary.class) );
+	public static Calib3dLibrary CALIB3D = (Calib3dLibrary) Native.synchronizedLibrary( (Library)Native.loadLibrary("opencv_calib3d"+OpenCVLibLoader.getPlatformLibraryVersion(), Calib3dLibrary.class) );
 }
