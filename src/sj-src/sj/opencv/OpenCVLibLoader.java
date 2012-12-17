@@ -1,5 +1,5 @@
 /* Description and License
- * A Java library that wraps the functionality of the native image 
+ * A Java library that wraps the functionality of the native image
  * processing library OpenCV
  *
  * (c) Sigurdur Orn Adalgeirsson (siggi@alum.mit.edu)
@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
- 
+
 package sj.opencv;
 
 import java.io.File;
@@ -44,20 +44,24 @@ public class OpenCVLibLoader {
 	private static String native_lib_path = "";
 	private static String native_lib_folder_name = "opencv.2.4.0";
 	private static String relative_lib_path = "";
+	private static String platform_specific_library_version = "";
 	private static String platform_specific_library_ending = "";
 
 	static{
 		if( Platform.isMac() ){
 			relative_lib_path += "osx" + SEP;
-			platform_specific_library_ending = ".2.4.0";
+			platform_specific_library_version = ".2.4.0";
+			platform_specific_library_ending = ".dylib";
 		}
 		else if( Platform.isLinux() ){
 			relative_lib_path += "linux" + SEP;
-			platform_specific_library_ending = "";
+			platform_specific_library_version = "";
+			platform_specific_library_ending = ".so";
 		}
 		else if( Platform.isWindows() ){
 			relative_lib_path += "windows" + SEP;
-			platform_specific_library_ending = "240";
+			platform_specific_library_version = "240";
+			platform_specific_library_ending = ".dll";
 		}
 		else{
 			throw new RuntimeException("Don't have a native library for your platform: "+System.getProperty("os.name"));
@@ -71,7 +75,11 @@ public class OpenCVLibLoader {
 		}
 	}
 
-	public static String getPlatformSpecificLibraryEnding(){
+	public static String getPlatformLibraryVersion(){
+		return platform_specific_library_version;
+	}
+
+	public static String getPlatformLibraryEnding(){
 		return platform_specific_library_ending;
 	}
 
@@ -102,16 +110,12 @@ public class OpenCVLibLoader {
 		// If native loading has not been disabled then we "guess" the absolute location of the lib folder
 		if( native_lib_path != null && native_lib_path.length() == 0 ){
 			native_lib_path = guessAbsoluteLibFolderLocation();
-
-			//TODO HACK fix this by fixing binaries and putting them in their right place
-			if( relative_lib_path.endsWith("linux/64bit/") ){
-				native_lib_path = "/mnt/hgfs/siggiMac/Downloads/OpenCV-2.4.0/build-linux64/lib";
-			}
-
 			if( native_lib_path == null ){
 				throw new RuntimeException("Can't guess absolute location of opencv native libraries");
 			}
-
+			if( !new File(native_lib_path +SEP+ "libopencv_core"+getPlatformLibraryVersion()+getPlatformLibraryEnding()).exists() ){
+				throw new RuntimeException("Can't load native opencv library from guessed location: "+native_lib_path +SEP+ "libopencv_core"+getPlatformLibraryVersion()+getPlatformLibraryEnding());
+			}
 		}
 
 		if( native_lib_path != null ){
@@ -173,6 +177,7 @@ public class OpenCVLibLoader {
 
 			String sketchbook_path = prop.getProperty("sketchbook.path");
 			if( sketchbook_path == null ) throw new RuntimeException("Key \"sketchbook.path\" missing from Processing preference file at: "+prefspath);
+			if(DEBUG) System.err.println( "OpenCV loading native libraries from: "+ sketchbook_path +SEP+ "libraries" +SEP+ "opencv_java" +SEP+ "library" +SEP+ relative_lib_path + native_lib_folder_name );
 			return sketchbook_path +SEP+ "libraries" +SEP+ "opencv_java" +SEP+ "library" +SEP+ relative_lib_path + native_lib_folder_name;
 		}
 		// If not in processing then we proceed to look in the execution folder
