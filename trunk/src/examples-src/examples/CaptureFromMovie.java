@@ -1,5 +1,5 @@
 /* Description and License
- * A Java library that wraps the functionality of the native image 
+ * A Java library that wraps the functionality of the native image
  * processing library OpenCV
  *
  * (c) Sigurdur Orn Adalgeirsson (siggi@alum.mit.edu)
@@ -19,7 +19,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA
  */
- 
+
 package examples;
 
 import processing.core.PApplet;
@@ -50,7 +50,7 @@ public class CaptureFromMovie extends PApplet{
 	public void setup(){
 
 		// Camera initiated to capture from device
-		capture = HighGui.captureFromFile( PUtils.guessDataLocation(this, "media/i_am_ironman.mov") );
+		capture = HighGui.captureFromFile( PUtils.guessDataLocation(this, "media/i_am_ironman.avi") );
 
 		int mov_width = (int)HighGui.getCaptureProperty(capture, CaptureProperty.CV_CAP_PROP_FRAME_WIDTH);
 		int mov_height = (int)HighGui.getCaptureProperty(capture, CaptureProperty.CV_CAP_PROP_FRAME_HEIGHT);
