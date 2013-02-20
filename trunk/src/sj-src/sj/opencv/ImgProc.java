@@ -29,10 +29,14 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.ptr.FloatByReference;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
 
 import sj.opencv.Constants.HistogramType;
 import sj.opencv.Constants.InterpolationMode;
@@ -83,7 +87,26 @@ public class ImgProc {
 		private final int open_cv_constant;
 		InterpType(int constant){this.open_cv_constant=constant;}
 	}
+	
+	public enum HistogramCompType {
+		CV_COMP_CORREL( ImgprocLibrary.CV_COMP_CORREL ),
+		CV_COMP_CHISQR( ImgprocLibrary.CV_COMP_CHISQR ),
+		CV_COMP_INTERSECT( ImgprocLibrary.CV_COMP_INTERSECT ),
+		CV_COMP_BHATTACHARYYA( ImgprocLibrary.CV_COMP_BHATTACHARYYA );
 
+		private final int open_cv_constant;
+		HistogramCompType(int constant){this.open_cv_constant=constant;}
+	}
+	
+	public static class HistogramMinMax {
+		public float min_val = Float.MIN_VALUE;
+		public float max_val = Float.MIN_VALUE;
+		public int min_idx = Integer.MIN_VALUE;
+		public int max_idx = Integer.MIN_VALUE;
+	}
+
+	
+	
 	/**
 	 * Transforms the source image using the specified map:
 	 * <p>
@@ -114,6 +137,41 @@ public class ImgProc {
 
 	public static void calcHist(IplImage image, Histogram hist, int accumulate, IplImage mask) {
 		IMGPROC.cvCalcArrHist(new JNAIplImage.ByReference(image.getPointer()), new CvHistogram.ByReference(hist.getPointer()), accumulate, mask==null?null:mask.getCvArr());
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static HistogramMinMax getMinMaxHistValue(Histogram hist, Float min_val, Float max_val, Integer min_idx, Integer max_idx) {
+		FloatByReference min_val_fbr = null, max_val_fbr = null;
+		IntByReference min_idx_ibr = null, max_idx_ibr = null;
+		HistogramMinMax minmax = new HistogramMinMax();
+		
+		if(min_val != null)
+			min_val_fbr = new FloatByReference(min_val);
+		if(max_val != null)
+			max_val_fbr = new FloatByReference(max_val);			
+
+		if(max_idx != null)
+			min_idx_ibr = new IntByReference(min_idx);
+		if(max_idx != null)
+			max_idx_ibr = new IntByReference(max_idx);
+		
+		IMGPROC.cvGetMinMaxHistValue(new CvHistogram.ByReference(hist.getPointer()), min_val_fbr, max_val_fbr, min_idx_ibr, max_idx_ibr);
+		
+		
+		if(min_val_fbr != null)
+			minmax.min_val = min_val_fbr.getValue();
+		if(max_val_fbr != null)
+			minmax.max_val = max_val_fbr.getValue();
+		
+		if(min_idx_ibr != null)
+			minmax.min_idx = min_idx_ibr.getValue();
+		if(max_idx_ibr != null)
+			minmax.max_idx = max_idx_ibr.getValue();
+		return minmax;
+	}
+	
+	public static double compareHist(Histogram hist1, Histogram hist2, HistogramCompType method) {
+		return IMGPROC.cvCompareHist(new CvHistogram.ByReference(hist1.getPointer()), new CvHistogram.ByReference(hist2.getPointer()), method.open_cv_constant);
 	}
 
 	public static void resize(IplImage src, IplImage dst){
@@ -607,6 +665,16 @@ public class ImgProc {
 		CvHistogram cvCreateHist = IMGPROC.cvCreateHist(dims, sizes, (int)type.getConstant(), ranges, uniform);
 		return new Histogram(cvCreateHist);
 	}
+	
+	public static void clearHist(Histogram hist) {
+		IMGPROC.cvClearHist(hist.hist);
+	}
 
-
+	@SuppressWarnings("deprecation")
+	public static Histogram cloneHist(Histogram src) {
+		CvHistogram cvH = new CvHistogram();
+		
+		IMGPROC.cvCopyHist(src.hist, new PointerByReference(cvH.getPointer()));
+		return new Histogram(cvH);
+	}
 }

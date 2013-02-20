@@ -24,6 +24,7 @@ package sj.opencv;
 
 import sj.opencv.jna.JNAOpenCV;
 import sj.opencv.jna.cxcore.CvHistogram;
+import sj.opencv.jna.highgui.HighguiLibrary.CvArr;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
@@ -31,7 +32,7 @@ import com.sun.jna.ptr.PointerByReference;
 
 public class Histogram extends BasePointer {
 
-	private CvHistogram hist;
+	CvHistogram hist;
 
 	protected Histogram(CvHistogram hist) {
 		super(hist.getPointer());
@@ -40,5 +41,9 @@ public class Histogram extends BasePointer {
 	@Override
 	protected void deAllocateNativeResource() {
 		JNAOpenCV.IMGPROC.cvReleaseHist( new PointerByReference(hist.getPointer()) );
+	}
+	
+	public CvArr getCvArr() {
+		return hist.bins;
 	}
 }

@@ -331,7 +331,9 @@ public class CxCore {
 	}
 
 	public static void split(IplImage src, IplImage dst0, IplImage dst1, IplImage dst2, IplImage dst3) {
+//		System.out.println("src: " + src.getNumberOfChannels() + " dst0: " + dst0.getNumberOfChannels());
 		CXCORE.cvSplit(src.getCvArr(), dst0==null?null:dst0.getCvArr(), dst1==null?null:dst1.getCvArr(), dst2==null?null:dst2.getCvArr(), dst3==null?null:dst3.getCvArr());
+//		System.out.println("past ----");
 	}
 
 
@@ -613,6 +615,22 @@ public class CxCore {
 	public static void add(IplImage src1, IplImage src2, IplImage dst) {
 		CXCORE.cvAdd(src1.getCvArr(), src2.getCvArr(), dst.getCvArr(), null);
 	}
+	
+	/**
+	 * Computes the per-element sum of two arrays.
+	 * <p>
+	 * <code>dst(i) = src1(i) + src2(i)</code>
+	 * <p>
+	 * All the arrays must have the same type and the same size (or ROI size).
+	 * For types that have limited range this operation is saturating.
+	 *
+	 * @param src1 - the first source array
+	 * @param src2 - the second source array
+	 * @param dst - the destination array
+	 */
+	public static void add(CvArr src1, CvArr src2, CvArr dst) {
+		CXCORE.cvAdd(src1, src2, dst, null);
+	}
 
 	/**
 	 * Computes the per-element sum of two arrays.
@@ -849,6 +867,29 @@ public class CxCore {
 	 */
 	public static void convertScale(IplImage src, IplImage dst, double scale, double shift) {
 		CXCORE.cvConvertScale(src.getCvArr(), dst.getCvArr(), scale, shift);
+	}
+	
+	/**
+	 * Copies one array to another with optional scaling, which is performed first,
+	 * and/or optional type conversion, performed after. All the channels of multi-channel
+	 * arrays are processed independently.
+	 * <p>
+	 * The type of conversion is done with rounding and saturation. That is, if the result
+	 * of scaling plus conversion cannot be represented exactly by a value of the destination
+	 * array element type, it is set to the nearest representable value on the real axis.
+	 * <p>
+	 * In the case of <code>scale=1</code>, <code>shift=0</code> no pre-scaling is done.
+	 * This is a specially optimized case and it has the appropriate <i>Convert</i> name.
+	 * If the source and destination arrays have equal types, this is also a special case
+	 * that can be used to scale and shift a matrix or an image and that is called <i>Scale</i> .
+	 *
+	 * @param src - the source array
+	 * @param dst - the destination array
+	 * @param scale - the scale factor
+	 * @param shift - the value added to the scaled source array elements
+	 */
+	public static void convertScale(CvArr src, CvArr dst, double scale, double shift) {
+		CXCORE.cvConvertScale(src, dst, scale, shift);
 	}
 
 	/**
