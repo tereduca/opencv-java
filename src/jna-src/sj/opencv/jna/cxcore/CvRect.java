@@ -43,11 +43,11 @@ public class CvRect extends Structure {
 	}
 	public CvRect(int x, int y, int width, int height) {
 		super();
+		initFieldOrder();
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		initFieldOrder();
 	}
 	public CvRect(Pointer p){
 		super(p);
