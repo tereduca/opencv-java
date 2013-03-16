@@ -42,7 +42,7 @@ import com.sun.jna.Platform;
  */
 public class OpenCVLibLoader {
 
-	private static boolean DEBUG = true;
+	private static boolean DEBUG = false;
 
 	private static String SEP = System.getProperty("file.separator");
 	private static String native_lib_path = "";
